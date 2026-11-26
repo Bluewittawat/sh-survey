@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script>
+  /* =====================================================================
+     ตั้งค่า: วาง URL ของ Google Apps Script Web App (ลงท้ายด้วย /exec)
+     ตัวอย่าง: 'https://script.google.com/macros/s/AKfycb.../exec'
+     ===================================================================== */
+  const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12151b" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<title>แบบสอบถามผู้มีส่วนได้ส่วนเสีย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Noto+Serif+Thai:wght@500;600;700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface: #fffdf9;
+  --ink: #1d2330;
+  --muted: #586070;
+  --line: #dcd7cc;
+  --line-strong: #a39c8d;
+  --accent: #1e3a66;
+  --accent-hover: #142a4d;
+  --on-accent: #ffffff;
+  --accent-soft: #e6ebf3;
+  --answered: #edf1f6;
+  --error: #a1251b;
+  --error-soft: #fbefed;
+  --focus: #b35c00;
+  --hover: #eeebe4;
+  --font-body: 'IBM Plex Sans Thai Looped', 'IBM Plex Sans Thai', 'Noto Sans Thai', 'Leelawadee UI', 'Leelawadee',
+               'Thonburi', 'Tahoma', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-head: 'Noto Serif Thai', 'Noto Serif', 'Leelawadee UI', 'Thonburi', 'Tahoma', Georgia, serif;
+  --gutter: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #12151b;
+    --surface: #191d25;
+    --ink: #e6e3dc;
+    --muted: #a3a8b3;
+    --line: #2f3542;
+    --line-strong: #5d6577;
+    --accent: #a9c1ec;
+    --accent-hover: #c4d4f3;
+    --on-accent: #0e1624;
+    --accent-soft: #1f2a3d;
+    --answered: #1c2535;
+    --error: #ff9d91;
+    --error-soft: #36201d;
+    --focus: #ffb35c;
+    --hover: #20252f;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip {
+  position: absolute; left: 8px; top: -100px; z-index: 100;
+  background: var(--accent); color: var(--on-accent); padding: .5rem 1rem; border-radius: 4px;
+}
+.skip:focus { top: max(8px, env(safe-area-inset-top, 0px)); }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- masthead / footer ---------- */
+.masthead {
+  border-top: 4px solid var(--accent);
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--surface);
+}
+.masthead .wrap { padding-top: .7rem; padding-bottom: .7rem; }
+.masthead p { margin: 0; font-size: .9rem; color: var(--muted); font-weight: 500; }
+.site-foot { margin-top: 3.5rem; border-top: 1px solid var(--line); }
+.site-foot .wrap { padding-top: 1.1rem; padding-bottom: 1.5rem; }
+.site-foot p { margin: 0; font-size: .85rem; color: var(--muted); }
+
+/* ---------- headings ---------- */
+h1, h2, h3 { font-family: var(--font-head); font-weight: 600; line-height: 1.45; margin: 0; }
+.form-head { padding: 2rem 0 1.25rem; }
+.form-head h1 { font-size: clamp(1.4rem, 1.05rem + 1.5vw, 1.85rem); }
+.form-head .subtitle { margin: .4rem 0 0; color: var(--muted); }
+
+/* ---------- intro ---------- */
+.intro { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); padding: 1.1rem 0 1.2rem; }
+.intro h2 { font-size: 1.15rem; margin-bottom: .35rem; }
+.intro p { margin: .45rem 0; }
+.intro .intro-thanks { margin-top: 1rem; }
+.intro .intro-contact { color: var(--muted); font-size: .92rem; margin-top: .15rem; }
+
+/* ---------- notice ---------- */
+.notice {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem;
+  margin: 1rem 0; padding: .7rem 1rem; font-size: .95rem;
+  background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 4px;
+}
+.notice p { margin: 0; flex: 1 1 260px; }
+.linklike {
+  font: inherit; color: var(--accent); background: none; border: 0; padding: .25rem 0;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px;
+}
+
+/* ---------- progress ---------- */
+.progress {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bg); padding: .55rem 0 .6rem; border-bottom: 1px solid var(--line);
+}
+.progress-text { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; color: var(--muted); margin-bottom: .35rem; }
+.progress-track { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+
+/* ---------- pages & sections ---------- */
+.page-head { padding: 1.75rem 0 .25rem; }
+.page-head h2 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--muted); }
+.page-head h2:focus { outline: none; }
+.page-head p { margin: .2rem 0 0; color: var(--muted); }
+.section-head { margin-top: 2.25rem; padding-top: .8rem; border-top: 2px solid var(--accent); }
+.section-head h3 { font-size: 1.2rem; }
+.section-head p { margin: .3rem 0 0; color: var(--muted); }
+.req-note { margin: 1.25rem 0 0; font-size: .88rem; color: var(--muted); }
+
+/* ---------- questions ---------- */
+.q {
+  min-width: 0; margin: 0; border: 0;
+  padding: 1.3rem 0 1.35rem 14px;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 92px;
+}
+.q.has-error { border-left-color: var(--error); }
+.q-title { display: block; float: left; width: 100%; padding: 0; margin: 0 0 .6rem; font-weight: 600; line-height: 1.65; }
+.q-title + * { clear: both; }
+.req { color: var(--error); }
+.hint { margin: -.2rem 0 .5rem; font-size: .9rem; color: var(--muted); }
+.hint.at-limit { color: var(--accent); font-weight: 600; }
+.err { margin: .6rem 0 0; color: var(--error); font-weight: 600; font-size: .95rem; }
+.counter { display: block; text-align: right; font-size: .82rem; color: var(--muted); margin-top: .25rem; }
+
+/* choices */
+.options { display: grid; gap: 2px; }
+.opt {
+  position: relative; display: flex; gap: .7rem; align-items: flex-start;
+  padding: .45rem .6rem; min-height: 44px; border-radius: 6px; cursor: pointer;
+}
+.opt:hover { background: var(--hover); }
+.opt:has(input:checked) { background: var(--accent-soft); }
+.opt:has(input:disabled) { cursor: not-allowed; color: var(--muted); }
+.opt:has(input:disabled):hover { background: transparent; }
+.opt input, .cell input, .scale-opt input {
+  position: absolute; left: 0; top: 0; width: 1px; height: 1px; margin: 0; opacity: 0;
+}
+.mark {
+  flex: none; width: 20px; height: 20px; margin-top: .32em;
+  border: 2px solid var(--line-strong); border-radius: 50%; background: var(--surface);
+  display: grid; place-items: center;
+}
+input[type="checkbox"] + .mark { border-radius: 4px; }
+.opt input:checked + .mark { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--surface); }
+.opt input[type="checkbox"]:checked + .mark { box-shadow: none; }
+.opt input[type="checkbox"]:checked + .mark::after {
+  content: ''; width: 5px; height: 10px; margin-top: -2px;
+  border: solid var(--on-accent); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+}
+.opt input:disabled + .mark { opacity: .45; }
+.opt input:focus-visible + .mark { outline: 3px solid var(--focus); outline-offset: 2px; }
+.options input.other-text { margin: .2rem 0 .3rem 2.3rem; width: calc(100% - 2.3rem); }
+
+/* text inputs */
+input[type="text"], textarea {
+  font: inherit; color: inherit; width: 100%;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px;
+  padding: .55rem .75rem; line-height: 1.6;
+}
+textarea { min-height: 8.5rem; resize: vertical; }
+input[type="text"]:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+input[type="text"]:disabled { opacity: .5; }
+[aria-invalid="true"] { border-color: var(--error); }
+
+/* grid (desktop table) */
+.grid-wrap {
+  margin-top: .25rem; max-height: min(78vh, 720px); overflow: auto;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+}
+.grid { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .95rem; line-height: 1.6; }
+.grid thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
+  border-bottom: 2px solid var(--line-strong);
+  padding: .55rem .25rem; vertical-align: bottom; text-align: center;
+  font-size: .78rem; font-weight: 600; line-height: 1.35; width: 11.5%;
+}
+.grid thead th.corner { width: auto; text-align: left; padding-left: .8rem; color: var(--muted); font-weight: 500; }
+.grid thead .col-num { display: block; font-family: var(--font-head); font-size: 1.05rem; line-height: 1.3; }
+.grid tbody th { text-align: left; font-weight: 400; padding: .6rem .8rem; vertical-align: middle; }
+.grid tbody td { text-align: center; padding: 0; vertical-align: middle; }
+.grid tbody tr > * { border-bottom: 1px solid var(--line); transition: background-color .15s; }
+.grid tbody tr:last-child > * { border-bottom: 0; }
+.grid tbody tr.answered > * { background: var(--answered); }
+.grid tbody tr.missing > * { background: var(--error-soft); }
+.grid tbody tr.missing > th { box-shadow: inset 3px 0 0 var(--error); }
+.rownum { color: var(--muted); margin-right: .35rem; font-variant-numeric: tabular-nums; }
+.cell {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 50px; padding: .35rem .15rem; cursor: pointer;
+}
+.dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid var(--line-strong); background: var(--surface); color: var(--muted);
+  display: grid; place-items: center; font-size: .85rem; font-variant-numeric: tabular-nums;
+}
+.cell:hover .dot { border-color: var(--accent); }
+.cell input:checked + .dot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.cell input:focus-visible + .dot { outline: 3px solid var(--focus); outline-offset: 2px; }
+.cell .short { display: none; }
+
+/* scale */
+.scale { display: grid; grid-template-columns: auto minmax(0, 360px) auto; align-items: center; gap: .5rem .9rem; margin-top: .25rem; }
+.scale-end { font-size: .9rem; color: var(--muted); }
+.scale-opts { display: grid; grid-template-columns: repeat(5, minmax(44px, 1fr)); gap: 6px; }
+.scale-opt { position: relative; }
+.scale-opt .box {
+  display: grid; place-items: center; height: 48px; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface);
+  font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.scale-opt:hover .box { border-color: var(--accent); }
+.scale-opt input:checked + .box { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.scale-opt input:focus-visible + .box { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* nav & status */
+.form-foot { margin-top: 2rem; }
+.status { margin: 0 0 1rem; }
+.status:empty { display: none; }
+.status.is-error { color: var(--error); font-weight: 600; border-left: 3px solid var(--error); padding: .2rem 0 .2rem .8rem; }
+.status.is-info { color: var(--muted); }
+.nav { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+.nav .spacer { flex: 1 1 auto; }
+.btn {
+  font: inherit; font-weight: 600; min-height: 48px; padding: .55rem 1.5rem;
+  border-radius: 6px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent); cursor: pointer;
+}
+.btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.secondary { background: transparent; color: var(--accent); }
+.btn.secondary:hover { background: var(--accent-soft); }
+.btn.small { min-height: 44px; padding: .35rem 1rem; font-size: .92rem; }
+.btn:disabled { opacity: .6; cursor: progress; }
+.btn[hidden] { display: none; }
+.local-note { margin: 1.25rem 0 0; font-size: .85rem; color: var(--muted); }
+.hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+/* thanks */
+.thanks { padding: 2.5rem 0 1rem; }
+.thanks h1 { font-size: clamp(1.35rem, 1.05rem + 1.4vw, 1.75rem); }
+.thanks-msg {
+  margin: 1.5rem 0 0; padding: 1rem 1.2rem; font-size: 1.08rem;
+  border-left: 3px solid var(--accent); background: var(--surface);
+}
+.thanks-msg:focus { outline: none; }
+
+/* index */
+.index-head { padding: 2rem 0 .5rem; }
+.index-head h1 { font-size: clamp(1.4rem, 1.05rem + 1.5vw, 1.85rem); }
+.index-head p { margin: .4rem 0 0; color: var(--muted); }
+.form-list { list-style: none; margin: 1.5rem 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.form-list li { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: .2rem 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+.form-key { font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; color: var(--accent); line-height: 1.5; }
+.form-list h2 { font-size: 1.08rem; }
+.form-list .group { margin: .15rem 0 .6rem; color: var(--muted); font-size: .95rem; }
+.link-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.link-row input { flex: 1 1 240px; font-size: .88rem; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; }
+.copy-msg { font-size: .85rem; color: var(--accent); min-width: 5em; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 719.98px) {
+  body { font-size: 16.5px; }
+  .grid-wrap { max-height: none; overflow: visible; border: 0; border-radius: 0; background: transparent; }
+  .grid thead { display: none; }
+  .grid, .grid tbody { display: block; }
+  .grid tbody tr {
+    display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); gap: 6px;
+    padding: .7rem; margin-bottom: .6rem;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+    transition: background-color .15s;
+  }
+  .grid tbody tr > *, .grid tbody tr.answered > *, .grid tbody tr.missing > * { border-bottom: 0; background: transparent; }
+  .grid tbody tr.answered { background: var(--answered); border-color: var(--line-strong); }
+  .grid tbody tr.missing { background: var(--error-soft); border-color: var(--error); }
+  .grid tbody tr.missing > th { box-shadow: none; }
+  .grid tbody th { grid-column: 1 / -1; padding: 0 0 .3rem; }
+  .grid tbody td { display: block; }
+  .cell {
+    min-height: 62px; gap: .1rem; padding: .4rem .1rem;
+    border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface);
+  }
+  .dot { width: auto; height: auto; border: 0; background: transparent; color: var(--ink); font-size: 1.1rem; font-weight: 600; }
+  .cell input:checked + .dot { background: transparent; color: var(--on-accent); }
+  .cell:has(input:checked) { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .cell input:focus-visible + .dot { outline: none; }
+  .cell:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .cell .short { display: block; font-size: .68rem; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+  .q { padding-left: 10px; }
+}
+@media (max-width: 520px) {
+  .scale { grid-template-columns: 1fr 1fr; }
+  .scale-opts { grid-column: 1 / -1; grid-row: 1; }
+  .scale-end.low { grid-row: 2; }
+  .scale-end.high { grid-row: 2; text-align: right; }
+  .nav .btn { flex: 1 1 0; padding-left: .75rem; padding-right: .75rem; }
+  .nav .spacer { display: none; }
+  .form-list li { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
+<header class="masthead"><div class="wrap"><p id="program-name"></p></div></header>
+<main id="main" class="wrap" tabindex="-1">
+  <noscript><p>กรุณาเปิดใช้งาน JavaScript ในเบราว์เซอร์เพื่อทำแบบสอบถาม</p></noscript>
+</main>
+<footer class="site-foot"><div class="wrap"><p id="contact-line"></p></div></footer>
+
+<script src="forms-spec.js"></script>
+
+<!-- ส่วนตรรกะ (ไม่แตะ DOM) ใช้ร่วมกับชุดทดสอบใน tests/ -->
+<script id="survey-core">
+const OTHER = '__other__';
+const OTHER_LABEL = 'อื่น ๆ (โปรดระบุ)';
+const OTHER_PREFIX = 'อื่น ๆ: ';
+const KNOWN_TYPES = ['section', 'mc', 'cb', 'grid', 'scale', 'text', 'para'];
+const MAXLEN = { text: 500, para: 2000, other: 500 };
+const SCALE_MIN = 1;
+const SCALE_MAX = 5;
+const STORAGE_PREFIX = 'sh-survey:v1:';
+
+function findForm(key) {
+  for (let i = 0; i < FORMS.length; i++) if (FORMS[i].key === key) return FORMS[i];
+  return null;
+}
+function isQuestion(item) { return item.type !== 'section'; }
+function isRequired(item) { return isQuestion(item) && item.required !== false; }
+function levelOf(label) {
+  const m = /^\s*(\d+)/.exec(String(label));
+  return m ? Number(m[1]) : null;
+}
+function levelText(label) { return String(label).replace(/^\s*\d+\s*/, ''); }
+function gridColumn(item, row) { return item.title + ' [' + row + ']'; }
+function clip(s, n) { return String(s == null ? '' : s).slice(0, n); }
+function eachQuestion(spec, fn) {
+  spec.pages.forEach(function (page, pi) {
+    page.items.forEach(function (item, ii) { if (isQuestion(item)) fn(item, pi, ii); });
+  });
+}
+function cbSelected(item, ans) {
+  const vals = ans && Array.isArray(ans.values) ? ans.values : [];
+  const out = item.choices.filter(function (c) { return vals.indexOf(c) >= 0; });
+  if (item.other && vals.indexOf(OTHER) >= 0) out.push(OTHER);
+  return out;
+}
+function gridAnswered(item, ans) {
+  const rows = ans && ans.rows && typeof ans.rows === 'object' ? ans.rows : {};
+  return item.rows.filter(function (r) { return item.cols.indexOf(rows[r]) >= 0; });
+}
+function scaleValue(ans) {
+  const n = Number(ans);
+  return (ans !== '' && ans != null && Number.isInteger(n) && n >= SCALE_MIN && n <= SCALE_MAX) ? n : null;
+}
+
+/* คืน null ถ้าผ่าน หรือ { message, field?, missingRows? } ถ้าไม่ผ่าน */
+function validateItem(item, ans) {
+  if (!isQuestion(item)) return null;
+  const req = isRequired(item);
+  switch (item.type) {
+    case 'mc': {
+      const v = ans && typeof ans.value === 'string' ? ans.value : '';
+      const valid = v === OTHER ? !!item.other : item.choices.indexOf(v) >= 0;
+      if (!v || !valid) return req ? { message: 'กรุณาเลือกคำตอบ 1 ข้อ' } : null;
+      if (v === OTHER && !String(ans.other || '').trim()) return { message: 'กรุณาระบุรายละเอียดในช่อง “อื่น ๆ”', field: 'other' };
+      return null;
+    }
+    case 'cb': {
+      const sel = cbSelected(item, ans);
+      if (!sel.length) return req ? { message: 'กรุณาเลือกอย่างน้อย 1 ข้อ' } : null;
+      if (item.max && sel.length > item.max) return { message: 'เลือกได้ไม่เกิน ' + item.max + ' ข้อ (ขณะนี้เลือก ' + sel.length + ' ข้อ)' };
+      if (sel.indexOf(OTHER) >= 0 && !String(ans.other || '').trim()) return { message: 'กรุณาระบุรายละเอียดในช่อง “อื่น ๆ”', field: 'other' };
+      return null;
+    }
+    case 'grid': {
+      if (!req) return null;
+      const done = gridAnswered(item, ans);
+      const missing = item.rows.filter(function (r) { return done.indexOf(r) < 0; });
+      if (!missing.length) return null;
+      if (missing.length === item.rows.length) {
+        return { message: 'กรุณาเลือกระดับให้ครบทุกแถว (ยังไม่ได้ตอบทั้ง ' + missing.length + ' แถว)', missingRows: missing };
+      }
+      const list = missing.map(function (r) { return '(' + (item.rows.indexOf(r) + 1) + ') ' + r; }).join('; ');
+      return { message: 'กรุณาเลือกระดับให้ครบทุกแถว ยังขาด ' + missing.length + ' แถว: ' + list, missingRows: missing };
+    }
+    case 'scale':
+      return scaleValue(ans) === null && req ? { message: 'กรุณาเลือกระดับ 1–5' } : null;
+    case 'text':
+    case 'para': {
+      const s = typeof ans === 'string' ? ans : '';
+      if (s.length > MAXLEN[item.type]) return { message: 'ความยาวเกิน ' + MAXLEN[item.type] + ' ตัวอักษร' };
+      if (!s.trim()) return req ? { message: 'กรุณากรอกคำตอบ' } : null;
+      return null;
+    }
+    default:
+      return { message: 'ไม่รู้จักชนิดคำถาม: ' + item.type };
+  }
+}
+
+/* ความคืบหน้า: นับเฉพาะข้อบังคับ, grid นับทีละแถว */
+function progressOf(spec, answers) {
+  let total = 0, done = 0;
+  eachQuestion(spec, function (item) {
+    if (!isRequired(item)) return;
+    const ans = answers[item.title];
+    if (item.type === 'grid') {
+      total += item.rows.length;
+      done += gridAnswered(item, ans).length;
+    } else {
+      total += 1;
+      if (!validateItem(item, ans)) done += 1;
+    }
+  });
+  return { total: total, done: done };
+}
+
+/* แปลงคำตอบเป็นรายการ [ชื่อคอลัมน์, ค่า] ตามลำดับในแบบสอบถาม */
+function buildPayload(spec, answers, meta) {
+  meta = meta || {};
+  const out = [['_form', spec.key], ['_hp', meta.hp || ''], ['_started', meta.started || '']];
+  eachQuestion(spec, function (item) {
+    const ans = answers[item.title];
+    switch (item.type) {
+      case 'mc': {
+        const v = ans && typeof ans.value === 'string' ? ans.value : '';
+        let val = '';
+        if (v === OTHER && item.other) val = OTHER_PREFIX + clip(String(ans.other || '').trim(), MAXLEN.other);
+        else if (item.choices.indexOf(v) >= 0) val = v;
+        out.push([item.title, val]);
+        break;
+      }
+      case 'cb': {
+        const vals = cbSelected(item, ans).map(function (v) {
+          return v === OTHER ? OTHER_PREFIX + clip(String(ans.other || '').trim(), MAXLEN.other) : v;
+        });
+        out.push([item.title, vals.join(', ')]);
+        break;
+      }
+      case 'grid': {
+        const rows = ans && ans.rows && typeof ans.rows === 'object' ? ans.rows : {};
+        item.rows.forEach(function (r) {
+          const col = rows[r];
+          out.push([gridColumn(item, r), item.cols.indexOf(col) >= 0 ? levelOf(col) : '']);
+        });
+        break;
+      }
+      case 'scale': {
+        const n = scaleValue(ans);
+        out.push([item.title, n === null ? '' : n]);
+        break;
+      }
+      case 'text':
+      case 'para':
+        out.push([item.title, clip(typeof ans === 'string' ? ans.trim() : '', MAXLEN[item.type])]);
+        break;
+    }
+  });
+  return out;
+}
+
+function columnNames(spec) {
+  return buildPayload(spec, {}, {}).map(function (p) { return p[0]; })
+    .filter(function (k) { return k.charAt(0) !== '_'; });
+}
+
+/* localStorage (หุ้ม try/catch ทุกครั้ง) */
+function loadSaved(key) {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    return s && typeof s === 'object' && s.answers && typeof s.answers === 'object' ? s : null;
+  } catch (e) { return null; }
+}
+function saveState(key, state) {
+  try { localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(state)); return true; } catch (e) { return false; }
+}
+function clearSaved(key) {
+  try { localStorage.removeItem(STORAGE_PREFIX + key); } catch (e) { /* ignore */ }
+}
+function isScriptUrlSet(url) {
+  if (typeof url !== 'string' || url.indexOf('PASTE_') >= 0) return false;
+  return /^https:\/\/\S+$/.test(url) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(url); // http เฉพาะทดสอบในเครื่อง
+}
+</script>
+
+<!-- ส่วนแสดงผล -->
+<script>
+(function () {
+  'use strict';
+
+  const main = document.getElementById('main');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scrollBehavior = reduceMotion ? 'auto' : 'smooth';
+  let uidCounter = 0;
+  function uid(p) { uidCounter += 1; return (p || 'id') + uidCounter; }
+
+  document.getElementById('program-name').textContent = CONFIG.programShort;
+  document.getElementById('contact-line').textContent = CONFIG.contact;
+
+  /* สร้าง element โดยใช้ textContent / setAttribute เท่านั้น */
+  function el(tag, props, children) {
+    const node = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        const v = props[k];
+        if (v == null || v === false) return;
+        if (k === 'class') node.className = v;
+        else if (k === 'text') node.textContent = v;
+        else if (k.slice(0, 2) === 'on' && typeof v === 'function') node.addEventListener(k.slice(2), v);
+        else node.setAttribute(k, v === true ? '' : String(v));
+      });
+    }
+    if (children != null) {
+      [].concat(children).forEach(function (c) {
+        if (c == null || c === false) return;
+        node.append(typeof c === 'string' ? document.createTextNode(c) : c);
+      });
+    }
+    return node;
+  }
+
+  function splitTitle(title) {
+    const i = title.indexOf(' | ');
+    return i < 0 ? [title, ''] : [title.slice(0, i), title.slice(i + 3)];
+  }
+
+  /* =============================================================== หน้ารวมลิงก์ */
+  function renderIndex() {
+    document.title = 'แบบสอบถามผู้มีส่วนได้ส่วนเสีย SH1–SH4';
+    main.replaceChildren();
+    main.append(el('div', { class: 'index-head' }, [
+      el('h1', { text: 'แบบสอบถามผู้มีส่วนได้ส่วนเสีย SH1–SH4' }),
+      el('p', { text: CONFIG.programShort }),
+    ]));
+    const list = el('ol', { class: 'form-list' });
+    FORMS.forEach(function (spec) {
+      const url = new URL(window.location.href);
+      url.search = '?f=' + spec.key;
+      url.hash = '';
+      const href = url.toString();
+      const fieldId = uid('link-');
+      const msg = el('span', { class: 'copy-msg', role: 'status', 'aria-live': 'polite' });
+      const field = el('input', { type: 'text', id: fieldId, readonly: true });
+      field.value = href;
+      field.addEventListener('focus', function () { field.select(); });
+      const copyBtn = el('button', { type: 'button', class: 'btn secondary small', text: 'คัดลอกลิงก์' });
+      copyBtn.addEventListener('click', function () {
+        copyText(href, field).then(function (ok) {
+          msg.textContent = ok ? 'คัดลอกแล้ว' : 'คัดลอกไม่ได้ กรุณาคัดลอกจากช่องลิงก์';
+          setTimeout(function () { msg.textContent = ''; }, 2500);
+        });
+      });
+      const titleParts = splitTitle(spec.title);
+      list.append(el('li', null, [
+        el('div', { class: 'form-key', 'aria-hidden': 'true', text: spec.key }),
+        el('div', null, [
+          el('h2', null, el('a', { href: href, text: titleParts[0] })),
+          el('p', { class: 'group', text: 'กลุ่มผู้ตอบ: ' + spec.group }),
+          el('label', { class: 'sr-only', for: fieldId, text: 'ลิงก์ของ ' + spec.key }),
+          el('div', { class: 'link-row' }, [field, copyBtn, msg]),
+        ]),
+      ]));
+    });
+    main.append(list);
+  }
+
+  function copyText(text, field) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(field); });
+    }
+    return Promise.resolve(legacyCopy(field));
+  }
+  function legacyCopy(field) {
+    try { field.focus(); field.select(); return document.execCommand('copy'); } catch (e) { return false; }
+  }
+
+  /* =============================================================== แบบสอบถาม */
+  function startForm(spec) {
+    const titleParts = splitTitle(spec.title);
+    document.title = titleParts[0];
+
+    const saved = loadSaved(spec.key);
+    const state = {
+      v: 1,
+      started: saved && typeof saved.started === 'string' && !isNaN(Date.parse(saved.started)) ? saved.started : new Date().toISOString(),
+      page: saved && Number.isInteger(saved.page) ? Math.min(Math.max(saved.page, 0), spec.pages.length - 1) : 0,
+      answers: saved ? saved.answers : {},
+    };
+    const restored = !!saved && Object.keys(state.answers).length > 0;
+    const refs = new Map();
+    let current = state.page;
+    let submitting = false;
+
+    function persist() { state.page = current; state.savedAt = new Date().toISOString(); saveState(spec.key, state); }
+    function getAns(item) { return state.answers[item.title]; }
+    function setAns(item, v) { state.answers[item.title] = v; persist(); afterChange(item); }
+
+    main.replaceChildren();
+
+    /* หัวเรื่อง */
+    main.append(el('header', { class: 'form-head' }, [
+      el('h1', { text: titleParts[0] }),
+      titleParts[1] ? el('p', { class: 'subtitle', text: titleParts[1] }) : null,
+    ]));
+
+    if (restored) {
+      const notice = el('div', { class: 'notice', role: 'status' }, [
+        el('p', { text: 'ระบบกู้คืนคำตอบที่ท่านบันทึกไว้ในเครื่องนี้แล้ว ท่านสามารถตอบต่อจากเดิมได้' }),
+        el('button', {
+          type: 'button', class: 'linklike', text: 'ล้างคำตอบและเริ่มใหม่',
+          onclick: function () {
+            if (window.confirm('ต้องการล้างคำตอบทั้งหมดและเริ่มทำใหม่ใช่หรือไม่')) {
+              clearSaved(spec.key);
+              startForm(spec);
+              window.scrollTo({ top: 0, behavior: 'auto' });
+            }
+          },
+        }),
+      ]);
+      main.append(notice);
+    }
+
+    /* แถบความคืบหน้า */
+    const progFill = el('div', { class: 'progress-fill' });
+    const progTrack = el('div', { class: 'progress-track', role: 'progressbar', 'aria-valuemin': 0, 'aria-label': 'ความคืบหน้าการตอบ' }, progFill);
+    const progPage = el('span');
+    const progCount = el('span');
+    main.append(el('div', { class: 'progress' }, [el('div', { class: 'progress-text' }, [progPage, progCount]), progTrack]));
+
+    /* ฟอร์ม */
+    const form = el('form', { novalidate: true, 'aria-label': titleParts[0] });
+    const hpInput = el('input', { type: 'text', name: 'website', id: 'hp-website', tabindex: '-1', autocomplete: 'off' });
+    form.append(el('div', { class: 'hp', 'aria-hidden': 'true' }, [el('label', { for: 'hp-website', text: 'เว็บไซต์' }), hpInput]));
+
+    /* ตัวแสดงผลแต่ละชนิดคำถาม (ฟังก์ชันด้านล่างถูก hoist จึงอ้างถึงได้) */
+    const RENDERERS = {
+      section: renderSection,
+      mc: function (item) { return renderChoice(item, false); },
+      cb: function (item) { return renderChoice(item, true); },
+      grid: renderGrid,
+      scale: renderScale,
+      text: renderTextual,
+      para: renderTextual,
+    };
+
+    const pageEls = spec.pages.map(function (page, pi) {
+      const headId = uid('page-h-');
+      const sec = el('section', { class: 'page', 'aria-labelledby': headId });
+      if (pi === 0) sec.append(renderIntro(spec));
+      sec.append(el('div', { class: 'page-head' }, [
+        el('h2', { id: headId, tabindex: '-1', text: page.title }),
+        page.help ? el('p', { text: page.help }) : null,
+      ]));
+      if (pi === 0) sec.append(el('p', { class: 'req-note', text: 'ข้อที่มีเครื่องหมาย * จำเป็นต้องตอบ' }));
+      page.items.forEach(function (item) {
+        const render = RENDERERS[item.type];
+        if (!render) throw new Error('Unknown item type: ' + item.type);
+        const node = render(item);
+        if (node.ref) refs.set(item, node.ref);
+        sec.append(node.el);
+      });
+      form.append(sec);
+      return { sec: sec, heading: sec.querySelector('h2') };
+    });
+
+    const status = el('p', { class: 'status', role: 'status', 'aria-live': 'polite' });
+    const btnBack = el('button', { type: 'button', class: 'btn secondary', text: 'ย้อนกลับ' });
+    const btnNext = el('button', { type: 'button', class: 'btn', text: 'ถัดไป' });
+    const btnSubmit = el('button', { type: 'submit', class: 'btn', text: 'ส่งคำตอบ' });
+    form.append(el('div', { class: 'form-foot' }, [
+      status,
+      el('div', { class: 'nav' }, [btnBack, el('span', { class: 'spacer' }), btnNext, btnSubmit]),
+      el('p', { class: 'local-note', text: 'ระหว่างทำแบบสอบถาม คำตอบจะถูกบันทึกไว้ชั่วคราวในเบราว์เซอร์ของเครื่องนี้ และจะถูกลบเมื่อส่งคำตอบสำเร็จ' }),
+    ]));
+    main.append(form);
+
+    /* กัน Enter ในช่องข้อความบรรทัดเดียวไม่ให้ส่งฟอร์ม */
+    form.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target instanceof HTMLInputElement && e.target.type === 'text') e.preventDefault();
+    });
+    btnBack.addEventListener('click', function () { if (current > 0) goToPage(current - 1, true); });
+    btnNext.addEventListener('click', function () {
+      const bad = validatePage(current, true);
+      if (bad) { setStatus('error', 'กรุณาตรวจสอบข้อที่ยังไม่ได้ตอบหรือตอบไม่ครบ'); focusError(bad); return; }
+      goToPage(current + 1, true);
+    });
+    form.addEventListener('submit', function (e) { e.preventDefault(); submit(); });
+
+    /* ---------------- render helpers ---------------- */
+    function renderIntro(s) {
+      const lines = intro(s.group).split('\n');
+      const box = el('section', { class: 'intro', 'aria-label': lines[0] });
+      lines.forEach(function (line, i) {
+        if (!line.trim()) return;
+        if (i === 0) box.append(el('h2', { text: line }));
+        else if (i === lines.length - 1) box.append(el('p', { class: 'intro-contact', text: line }));
+        else if (i === lines.length - 2) box.append(el('p', { class: 'intro-thanks', text: line }));
+        else box.append(el('p', { text: line }));
+      });
+      return box;
+    }
+
+    function titleNode(item, tag, attrs) {
+      const n = el(tag, Object.assign({ class: 'q-title' }, attrs || {}), item.title);
+      if (isRequired(item)) {
+        n.append(el('span', { class: 'req', 'aria-hidden': 'true', text: ' *' }));
+        n.append(el('span', { class: 'sr-only', text: ' (จำเป็นต้องตอบ)' }));
+      }
+      return n;
+    }
+
+    function makeRef(root, errEl, opts) {
+      return Object.assign({ root: root, errEl: errEl, update: function () {}, onError: function () {}, focusTarget: function () { return null; } }, opts);
+    }
+
+    function firstEnabled(list) {
+      for (let i = 0; i < list.length; i++) if (list[i] && !list[i].disabled) return list[i];
+      return null;
+    }
+
+    function renderSection(item) {
+      return { el: el('div', { class: 'section-head' }, [el('h3', { text: item.title }), item.help ? el('p', { text: item.help }) : null]) };
+    }
+
+    function renderChoice(item, multi) {
+      const qid = uid('q');
+      const errId = qid + '-err';
+      const ans = getAns(item) || {};
+      const selected = multi ? cbSelected(item, ans) : null;
+      const type = multi ? 'checkbox' : 'radio';
+      const fs = el('fieldset', { class: 'q q-' + item.type, id: qid, 'aria-describedby': errId });
+      fs.append(titleNode(item, 'legend'));
+      let hint = null;
+      if (multi && item.max) {
+        hint = el('p', { class: 'hint', id: qid + '-hint', 'aria-live': 'polite' });
+        fs.setAttribute('aria-describedby', qid + '-hint ' + errId);
+        fs.append(hint);
+      }
+      const list = el('div', { class: 'options' });
+      const inputs = [];
+      function option(value, label, checked) {
+        const inp = el('input', { type: type, name: qid, id: uid(qid + '-o') });
+        inp.value = value;
+        inp.checked = checked;
+        inputs.push(inp);
+        return el('label', { class: 'opt', for: inp.id }, [inp, el('span', { class: 'mark', 'aria-hidden': 'true' }), el('span', { text: label })]);
+      }
+      item.choices.forEach(function (c) {
+        list.append(option(c, c, multi ? selected.indexOf(c) >= 0 : ans.value === c));
+      });
+      let otherInp = null, otherText = null;
+      if (item.other) {
+        list.append(option(OTHER, OTHER_LABEL, multi ? selected.indexOf(OTHER) >= 0 : ans.value === OTHER));
+        otherInp = inputs[inputs.length - 1];
+        otherText = el('input', {
+          type: 'text', class: 'other-text', maxlength: MAXLEN.other, autocomplete: 'off',
+          'aria-label': 'โปรดระบุคำตอบ “อื่น ๆ” สำหรับข้อ ' + item.title,
+        });
+        otherText.value = typeof ans.other === 'string' ? ans.other : '';
+        list.append(otherText);
+      }
+      fs.append(list);
+      const err = el('p', { class: 'err', id: errId, hidden: true });
+      fs.append(err);
+
+      function read() {
+        const other = otherText ? clip(otherText.value, MAXLEN.other) : '';
+        if (multi) return { values: inputs.filter(function (i) { return i.checked; }).map(function (i) { return i.value; }), other: other };
+        const sel = inputs.filter(function (i) { return i.checked; })[0];
+        return { value: sel ? sel.value : '', other: other };
+      }
+      list.addEventListener('change', function (e) { if (e.target !== otherText) setAns(item, read()); });
+      if (otherText) {
+        otherText.addEventListener('input', function () {
+          if (otherText.value.trim() && !otherInp.checked && !otherInp.disabled) otherInp.checked = true;
+          setAns(item, read());
+        });
+      }
+      function update() {
+        if (!(multi && item.max)) return;
+        const count = inputs.filter(function (i) { return i.checked; }).length;
+        const full = count >= item.max;
+        inputs.forEach(function (i) { i.disabled = full && !i.checked; });
+        if (otherText) otherText.disabled = full && !otherInp.checked;
+        hint.textContent = 'เลือกได้ไม่เกิน ' + item.max + ' ข้อ' + (count ? ' (เลือกแล้ว ' + count + ' ข้อ)' : '');
+        hint.classList.toggle('at-limit', full);
+      }
+      update();
+      return {
+        el: fs,
+        ref: makeRef(fs, err, {
+          update: update,
+          onError: function (e) { if (otherText) otherText.setAttribute('aria-invalid', e && e.field === 'other' ? 'true' : 'false'); },
+          focusTarget: function (e) { return e && e.field === 'other' && otherText ? otherText : firstEnabled(inputs.filter(function (i) { return i.checked; }).concat(inputs)); },
+        }),
+      };
+    }
+
+    function renderGrid(item) {
+      const qid = uid('q');
+      const errId = qid + '-err';
+      const ans = getAns(item);
+      const rowsAns = ans && ans.rows && typeof ans.rows === 'object' ? ans.rows : {};
+      const fs = el('fieldset', { class: 'q q-grid', id: qid, 'aria-describedby': errId });
+      fs.append(titleNode(item, 'legend'));
+      const table = el('table', { class: 'grid' });
+      table.style.setProperty('--cols', String(item.cols.length));
+      const headRow = el('tr', null, el('th', { scope: 'col', class: 'corner', text: 'รายการ' }));
+      item.cols.forEach(function (c) {
+        headRow.append(el('th', { scope: 'col' }, [el('span', { class: 'col-num', text: String(levelOf(c)) }), el('span', { text: levelText(c) })]));
+      });
+      table.append(el('thead', null, headRow));
+      const tbody = el('tbody');
+      const rowEls = [];
+      const rowInputs = [];
+      item.rows.forEach(function (r, ri) {
+        const tr = el('tr', null, el('th', { scope: 'row' }, [el('span', { class: 'rownum', text: (ri + 1) + '.' }), r]));
+        const inputs = [];
+        item.cols.forEach(function (c) {
+          const inp = el('input', { type: 'radio', name: qid + '-r' + ri, 'aria-label': r + ': ' + c });
+          inp.value = c;
+          inp.checked = rowsAns[r] === c;
+          inputs.push(inp);
+          tr.append(el('td', null, el('label', { class: 'cell' }, [
+            inp,
+            el('span', { class: 'dot', 'aria-hidden': 'true', text: String(levelOf(c)) }),
+            el('span', { class: 'short', 'aria-hidden': 'true', text: levelText(c) }),
+          ])));
+        });
+        rowEls.push(tr);
+        rowInputs.push(inputs);
+        tbody.append(tr);
+      });
+      table.append(tbody);
+      fs.append(el('div', { class: 'grid-wrap' }, table));
+      const err = el('p', { class: 'err', id: errId, hidden: true });
+      fs.append(err);
+
+      table.addEventListener('change', function () {
+        const rows = {};
+        item.rows.forEach(function (r, ri) {
+          const sel = rowInputs[ri].filter(function (i) { return i.checked; })[0];
+          if (sel) rows[r] = sel.value;
+        });
+        setAns(item, { rows: rows });
+      });
+      function update() {
+        rowEls.forEach(function (tr, ri) {
+          const answered = rowInputs[ri].some(function (i) { return i.checked; });
+          tr.classList.toggle('answered', answered);
+          if (answered) tr.classList.remove('missing');
+        });
+      }
+      update();
+      return {
+        el: fs,
+        ref: makeRef(fs, err, {
+          update: update,
+          onError: function (e) {
+            const missing = e && e.missingRows ? e.missingRows : [];
+            rowEls.forEach(function (tr, ri) { tr.classList.toggle('missing', missing.indexOf(item.rows[ri]) >= 0); });
+          },
+          focusTarget: function (e) {
+            const r = e && e.missingRows && e.missingRows.length ? item.rows.indexOf(e.missingRows[0]) : 0;
+            return rowInputs[Math.max(r, 0)][0];
+          },
+        }),
+      };
+    }
+
+    function renderScale(item) {
+      const qid = uid('q');
+      const errId = qid + '-err';
+      const cur = scaleValue(getAns(item));
+      const fs = el('fieldset', { class: 'q q-scale', id: qid, 'aria-describedby': errId });
+      fs.append(titleNode(item, 'legend'));
+      const opts = el('div', { class: 'scale-opts' });
+      const inputs = [];
+      for (let n = SCALE_MIN; n <= SCALE_MAX; n++) {
+        const inp = el('input', { type: 'radio', name: qid, id: qid + '-' + n });
+        inp.value = String(n);
+        inp.checked = cur === n;
+        inputs.push(inp);
+        const extra = n === SCALE_MIN && item.low ? ' (' + item.low + ')' : (n === SCALE_MAX && item.high ? ' (' + item.high + ')' : '');
+        opts.append(el('label', { class: 'scale-opt', for: inp.id }, [
+          inp, el('span', { class: 'box' }, [String(n), extra ? el('span', { class: 'sr-only', text: extra }) : null]),
+        ]));
+      }
+      fs.append(el('div', { class: 'scale' }, [
+        el('span', { class: 'scale-end low', 'aria-hidden': 'true', text: item.low ? SCALE_MIN + ' = ' + item.low : '' }),
+        opts,
+        el('span', { class: 'scale-end high', 'aria-hidden': 'true', text: item.high ? SCALE_MAX + ' = ' + item.high : '' }),
+      ]));
+      const err = el('p', { class: 'err', id: errId, hidden: true });
+      fs.append(err);
+      opts.addEventListener('change', function () {
+        const sel = inputs.filter(function (i) { return i.checked; })[0];
+        setAns(item, sel ? Number(sel.value) : '');
+      });
+      return {
+        el: fs,
+        ref: makeRef(fs, err, { focusTarget: function () { return inputs.filter(function (i) { return i.checked; })[0] || inputs[0]; } }),
+      };
+    }
+
+    function renderTextual(item) {
+      const multi = item.type === 'para';
+      const qid = uid('q');
+      const inputId = qid + '-in';
+      const errId = qid + '-err';
+      const max = MAXLEN[item.type];
+      const wrap = el('div', { class: 'q q-' + item.type, id: qid });
+      wrap.append(titleNode(item, 'label', { for: inputId }));
+      const input = multi
+        ? el('textarea', { id: inputId, rows: 5, maxlength: max, 'aria-describedby': qid + '-count ' + errId })
+        : el('input', { type: 'text', id: inputId, maxlength: max, autocomplete: 'off', 'aria-describedby': errId });
+      if (isRequired(item)) input.setAttribute('aria-required', 'true');
+      const v = getAns(item);
+      input.value = typeof v === 'string' ? clip(v, max) : '';
+      wrap.append(input);
+      let counter = null;
+      if (multi) { counter = el('span', { class: 'counter', id: qid + '-count' }); wrap.append(counter); }
+      const err = el('p', { class: 'err', id: errId, hidden: true });
+      wrap.append(err);
+      input.addEventListener('input', function () { setAns(item, clip(input.value, max)); });
+      function update() { if (counter) counter.textContent = input.value.length + ' / ' + max + ' ตัวอักษร'; }
+      update();
+      return {
+        el: wrap,
+        ref: makeRef(wrap, err, {
+          update: update,
+          onError: function (e) { input.setAttribute('aria-invalid', e ? 'true' : 'false'); },
+          focusTarget: function () { return input; },
+        }),
+      };
+    }
+
+    /* ---------------- validation UI ---------------- */
+    function showError(ref, e) {
+      ref.root.classList.add('has-error');
+      ref.errEl.textContent = e.message;
+      ref.errEl.hidden = false;
+      ref.onError(e);
+    }
+    function clearError(ref) {
+      ref.root.classList.remove('has-error');
+      ref.errEl.textContent = '';
+      ref.errEl.hidden = true;
+      ref.onError(null);
+    }
+    function validatePage(pi, show) {
+      let first = null;
+      spec.pages[pi].items.forEach(function (item) {
+        if (!isQuestion(item)) return;
+        const ref = refs.get(item);
+        const e = validateItem(item, getAns(item));
+        if (e) {
+          if (show) showError(ref, e);
+          if (!first) first = { ref: ref, err: e };
+        } else if (show) clearError(ref);
+      });
+      return first;
+    }
+    function focusError(bad) {
+      const target = bad.ref.focusTarget(bad.err);
+      if (target) target.focus({ preventScroll: true });
+      bad.ref.root.scrollIntoView({ block: 'start', behavior: scrollBehavior });
+    }
+    function afterChange(item) {
+      const ref = refs.get(item);
+      if (ref) {
+        ref.update();
+        if (ref.root.classList.contains('has-error')) {
+          const e = validateItem(item, getAns(item));
+          if (e) showError(ref, e); else clearError(ref);
+        }
+      }
+      if (status.classList.contains('is-error') && !submitting && !validatePage(current, false)) setStatus('', '');
+      updateProgress();
+    }
+    function setStatus(kind, text) {
+      status.className = 'status' + (kind ? ' is-' + kind : '');
+      status.textContent = text;
+    }
+
+    /* ---------------- progress & paging ---------------- */
+    function updateProgress() {
+      const p = progressOf(spec, state.answers);
+      const pct = p.total ? Math.round((p.done / p.total) * 100) : 100;
+      progFill.style.width = pct + '%';
+      progTrack.setAttribute('aria-valuemax', String(p.total));
+      progTrack.setAttribute('aria-valuenow', String(p.done));
+      progTrack.setAttribute('aria-valuetext', 'ตอบแล้ว ' + p.done + ' จาก ' + p.total + ' รายการที่ต้องตอบ');
+      progPage.textContent = spec.pages[current].title;
+      progCount.textContent = 'ตอบแล้ว ' + p.done + ' / ' + p.total + ' รายการที่ต้องตอบ';
+    }
+    function goToPage(pi, moveFocus) {
+      current = pi;
+      pageEls.forEach(function (p, i) { p.sec.hidden = i !== pi; });
+      const last = pi === spec.pages.length - 1;
+      btnBack.hidden = pi === 0;
+      btnNext.hidden = last;
+      btnSubmit.hidden = !last;
+      setStatus('', '');
+      persist();
+      updateProgress();
+      if (moveFocus) {
+        window.scrollTo({ top: 0, behavior: scrollBehavior });
+        pageEls[pi].heading.focus({ preventScroll: true });
+      }
+    }
+
+    /* ---------------- submit ---------------- */
+    function setBusy(busy) {
+      submitting = busy;
+      btnSubmit.disabled = busy;
+      btnBack.disabled = busy;
+      btnSubmit.textContent = busy ? 'กำลังส่ง…' : 'ส่งคำตอบ';
+      form.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+    function submit() {
+      if (submitting) return;
+      for (let pi = 0; pi < spec.pages.length; pi++) {
+        if (validatePage(pi, false)) {
+          if (pi !== current) goToPage(pi, false);
+          const bad = validatePage(pi, true);
+          setStatus('error', 'กรุณาตรวจสอบข้อที่ยังไม่ได้ตอบหรือตอบไม่ครบ');
+          focusError(bad);
+          return;
+        }
+      }
+      if (!isScriptUrlSet(SCRIPT_URL)) {
+        setStatus('error', 'ยังไม่ได้ตั้งค่าปลายทางสำหรับส่งคำตอบ (SCRIPT_URL ใน index.html) กรุณาแจ้งผู้ดูแลแบบสอบถาม คำตอบของท่านยังถูกเก็บไว้ในเครื่องนี้');
+        return;
+      }
+      setBusy(true);
+      setStatus('info', 'กำลังส่งคำตอบ…');
+      const body = new URLSearchParams();
+      buildPayload(spec, state.answers, { hp: hpInput.value, started: state.started }).forEach(function (p) {
+        body.append(p[0], String(p[1]));
+      });
+      const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 30000) : null;
+      let done = false;
+      fetch(SCRIPT_URL, { method: 'POST', body: body, signal: ctrl ? ctrl.signal : undefined })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          if (!data || data.ok !== true) throw new Error((data && data.error) || 'rejected');
+          done = true;
+          clearSaved(spec.key);
+          renderThanks(spec);
+        })
+        .catch(function () {
+          setStatus('error', 'ส่งคำตอบไม่สำเร็จ คำตอบของท่านยังถูกเก็บไว้ในเครื่องนี้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วกด “ส่งคำตอบ” อีกครั้ง');
+        })
+        .then(function () {
+          if (timer) clearTimeout(timer);
+          if (!done) setBusy(false);
+        });
+    }
+
+    refs.forEach(function (ref) { ref.update(); });
+    goToPage(current, false);
+  }
+
+  function renderThanks(spec) {
+    const titleParts = splitTitle(spec.title);
+    const msg = el('p', { class: 'thanks-msg', tabindex: '-1', text: 'ได้รับคำตอบของท่านเรียบร้อยแล้ว ขอขอบพระคุณที่ให้ข้อมูลเพื่อการพัฒนาหลักสูตร' });
+    main.replaceChildren(el('div', { class: 'thanks', role: 'status' }, [el('h1', { text: titleParts[0] }), msg]));
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    msg.focus({ preventScroll: true });
+  }
+
+  /* =============================================================== เริ่มต้น */
+  const key = (new URLSearchParams(window.location.search).get('f') || '').trim().toUpperCase();
+  const spec = findForm(key);
+  if (spec) startForm(spec); else renderIndex();
+})();
+</script>
+</body>
+</html>
