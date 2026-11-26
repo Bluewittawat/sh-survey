@@ -258,6 +258,7 @@ function makeGas() {
     setFrozenRows(n) { this.frozen = n; }
     clear() { this.data = []; }
     setColumnWidth() {}
+    setColumnWidths(start, n, w) { this.widths = this.widths || {}; for (let i = 0; i < n; i++) this.widths[start + i] = w; }
     autoResizeColumns() {}
   }
   class Range {
@@ -286,6 +287,8 @@ function makeGas() {
       return this;
     }
     setFontWeight(w) { if (this.r === 1 && w === 'bold') this.s.bold.push([this.c, this.nc]); return this; }
+    setWrap(on) { if (this.r === 1 && on) this.s.wrapped = true; return this; }
+    setVerticalAlignment() { return this; }
     setNumberFormat() { return this; }
   }
   const sheets = {};
@@ -365,9 +368,10 @@ test('คีย์ใหม่ → เพิ่มคอลัมน์ต่อ
   post(g, [['_form', 'SH4'], ['_started', ''], ['ก', 'a'], ['ข', 'b']]);
   post(g, [['_form', 'SH4'], ['_started', ''], ['ข', 'b2'], ['ค', 'c2']]);
   const v = sheets['คำตอบ SH4'].getDataRange().getValues();
-  eq(v[0], ['เวลาที่ส่ง', 'เวลาเริ่มทำ', 'ก', 'ข', 'ค']);
-  eq(v[1].slice(2), ['a', 'b', '']);
-  eq(v[2].slice(2), ['', 'b2', 'c2']);
+  const base = 2 + C.columnNames(C.findForm('SH4')).length; // แท็บถูกสร้างพร้อมหัวคอลัมน์ครบทุกข้อ
+  eq(v[0].slice(base), ['ก', 'ข', 'ค']);
+  eq(v[1].slice(base), ['a', 'b', '']);
+  eq(v[2].slice(base), ['', 'b2', 'c2']);
 });
 
 test('กัน formula injection และแปลงตัวเลขล้วนเป็น Number', () => {
@@ -399,7 +403,13 @@ test('ค่ายาวเกิน 2000 ถูกตัด; เกิน 150 �
 test('setupSheets สร้างแท็บคำตอบ 4 แท็บ + แท็บโยง PLO และเกณฑ์', () => {
   const { g, sheets } = makeGas();
   g.setupSheets();
-  for (const k of ['SH1', 'SH2', 'SH3', 'SH4']) assert.ok(sheets['คำตอบ ' + k], k);
+  for (const k of ['SH1', 'SH2', 'SH3', 'SH4']) {
+    const sh = sheets['คำตอบ ' + k];
+    assert.ok(sh, k);
+    eq(sh.data[0], ['เวลาที่ส่ง', 'เวลาเริ่มทำ'].concat(C.columnNames(C.findForm(k))), k + ' headers');
+    assert.ok(sh.wrapped && sh.frozen === 1, k + ' header formatting');
+    assert.strictEqual(sh.widths[3], 240);
+  }
   const m = sheets['การโยงข้อคำถามกับ PLO'];
   eq(m.data[0].slice(0, 3), ['ข้อคำถามร่วม', 'PLO', 'EC-ES']);
   assert.strictEqual(m.data[1][0], C.CORE_ITEMS[0][0]);
@@ -407,6 +417,26 @@ test('setupSheets สร้างแท็บคำตอบ 4 แท็บ + �
   eq(m.data.slice(1, 6).map((r) => [r[4], r[5]]), [
     ['4.51–5.00', 'มากที่สุด'], ['3.51–4.50', 'มาก'], ['2.51–3.50', 'ปานกลาง'], ['1.51–2.50', 'น้อย'], ['1.00–1.50', 'น้อยที่สุด'],
   ]);
+});
+
+test('FORM_HEADERS ใน Code.gs ตรงกับ forms-spec.js (scripts/sync-headers.js --check)', () => {
+  const { g } = makeGas();
+  for (const f of C.FORMS) eq(g.FORM_HEADERS[f.key], C.columnNames(f), f.key);
+  assert.ok(require('../scripts/sync-headers.js').sync(true), 'run: node scripts/sync-headers.js');
+});
+
+test('setupSheets บนแท็บที่มีข้อมูลแล้ว: ไม่ย้ายคอลัมน์เดิม เติมเฉพาะที่ขาดต่อท้าย', () => {
+  const { g, sheets } = makeGas();
+  g.setupSheets();
+  const sh = sheets['คำตอบ SH2'];
+  const cols = C.columnNames(C.findForm('SH2'));
+  // จำลองแท็บเก่าที่มีแค่บางคอลัมน์ + คอลัมน์แปลกปลอม 1 คอลัมน์ และข้อมูล 1 แถว
+  sh.data = [['เวลาที่ส่ง', 'เวลาเริ่มทำ', cols[1], 'คอลัมน์เก่า', cols[0]], ['t', 's', 'B', 'X', 'A']];
+  g.setupSheets();
+  const v = sh.getDataRange().getValues();
+  eq(v[0].slice(0, 5), ['เวลาที่ส่ง', 'เวลาเริ่มทำ', cols[1], 'คอลัมน์เก่า', cols[0]]);
+  eq(v[0].slice(5), cols.slice(2));
+  eq(v[1].slice(0, 5), ['t', 's', 'B', 'X', 'A']);
 });
 
 test('CORE_ITEMS ใน Code.gs ตรงกับ forms-spec.js', () => {
