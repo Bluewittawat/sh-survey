@@ -106,9 +106,10 @@ async function fillVisiblePage(page) {
     const page = await browser.newPage();
     for (const q of ['', '?f=XYZ']) {
       await page.goto(base + 'index.html' + q);
-      assert.strictEqual(await page.locator('.form-list li').count(), 4);
+      assert.strictEqual(await page.locator('.form-list .form-row').count(), 4);
       assert.strictEqual(await page.getByRole('button', { name: 'คัดลอกลิงก์' }).count(), 4);
-      const v = await page.locator('.link-row input').first().inputValue();
+      const v = await page.locator('.form-url').first().textContent();
+      assert.strictEqual(await page.getByRole('link', { name: 'เปิดแบบสอบถาม' }).count(), 4);
       assert.ok(v.endsWith('?f=SH1'), v);
     }
     await page.close();
