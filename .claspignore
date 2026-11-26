@@ -1,0 +1,5 @@
+# ส่งขึ้น Apps Script เฉพาะ Code.gs และ appsscript.json
+# (ห้ามส่ง forms-spec.js / index.html / tests เพราะจะชนกับ Code.gs)
+**/**
+!Code.gs
+!appsscript.json

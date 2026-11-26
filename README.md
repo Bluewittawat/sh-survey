@@ -119,6 +119,58 @@ URL `/exec` เดิมจะใช้โค้ดใหม่ทันที �
   - รันซ้ำได้ทุกเมื่อ (แท็บ `สรุปผล` ถูกเขียนใหม่ทั้งแท็บ อย่าพิมพ์อะไรเพิ่มในแท็บนี้)
   - คอลัมน์ที่นำมาสรุปคือคอลัมน์ที่ค่าทุกค่าเป็นจำนวนเต็ม 1–5
 
+## ทางเลือก: แก้ Apps Script จาก VS Code ด้วย clasp
+
+ใช้แทนการคัดลอกโค้ดไปวางเองในขั้นที่ 1, 2 และ 5 (`.claspignore` กำหนดให้ส่งขึ้นเฉพาะ `Code.gs` และ `appsscript.json`)
+
+1. ติดตั้งและเข้าสู่ระบบ (ครั้งเดียว)
+
+   ```bash
+   npm i -g @google/clasp
+   clasp login                 # เปิดเบราว์เซอร์ให้เลือกบัญชี Google
+   ```
+
+   แล้วเปิด Apps Script API ที่ <https://script.google.com/home/usersettings>
+
+2. ผูกโฟลเดอร์นี้กับโปรเจกต์ Apps Script (เลือกอย่างใดอย่างหนึ่ง)
+
+   ```bash
+   # ก) สร้าง Google Sheet ใหม่พร้อมสคริปต์
+   clasp create --type sheets --title "ผลการตอบแบบสอบถาม SH1–SH4 หลักสูตร ปวช. เตรียมวิศวกรรมศาสตร์ 2570" --rootDir .
+
+   # ข) ใช้ Sheet ที่สร้างไว้แล้ว: เปิด Extensions > Apps Script > Project Settings คัดลอก Script ID
+   echo '{"scriptId":"<SCRIPT_ID>","rootDir":"."}' > .clasp.json
+   ```
+
+   ไฟล์ `.clasp.json` เก็บ Script ID ของท่าน (อยู่ใน `.gitignore` ไม่ถูก commit)
+
+3. ส่งโค้ดขึ้น แล้วรัน `setupSheets` ครั้งแรก
+
+   ```bash
+   clasp push -f               # -f เขียนทับ appsscript.json บนเซิร์ฟเวอร์
+   clasp open-script           # เปิดหน้า Apps Script → เลือก setupSheets → Run → อนุญาตสิทธิ์
+   ```
+
+4. Deploy ครั้งแรก (ค่าใน `appsscript.json` ตั้งไว้แล้ว: Execute as Me, Anyone)
+
+   ```bash
+   clasp deploy -d "survey v1"   # จด Deployment ID ที่ได้ (ขึ้นต้น AKfycb...)
+   ```
+
+   URL ของ Web app คือ `https://script.google.com/macros/s/<Deployment ID>/exec`
+   นำไปใส่ `SCRIPT_URL` ใน `index.html`
+   (ครั้งแรกควรเปิด Deploy > Manage deployments ในหน้า Apps Script ยืนยันว่า Who has access = Anyone)
+
+5. แก้ `Code.gs` ใน VS Code ภายหลัง: ส่งโค้ดขึ้นแล้วอัปเดต deployment เดิม URL จะไม่เปลี่ยน
+
+   ```bash
+   clasp push
+   clasp deployments                                  # ดู Deployment ID
+   clasp redeploy <Deployment ID> -d "survey v2"
+   ```
+
+> อย่าใช้ `clasp deploy` ซ้ำหลังเริ่มเก็บข้อมูล เพราะจะได้ URL ใหม่
+
 ## ข้อควรระวัง
 
 - **URL ของ Apps Script เป็นสาธารณะ** ใครที่มี URL ก็ส่งข้อมูลเข้ามาได้
