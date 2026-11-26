@@ -310,19 +310,19 @@ function ensureColumns_(sheet, n) {
   if (max < n) sheet.insertColumnsAfter(max, n - max);
 }
 
-/* เขียนหัวคอลัมน์ ตัวหนา ตัดบรรทัด ชิดบน และกว้างพอให้เห็นชื่อแถว [ ... ] ของข้อตาราง */
 function writeHeaders_(sheet, headers) {
   ensureColumns_(sheet, headers.length);
-  sheet.getRange(1, 1, 1, headers.length)
-    .setValues([headers.map(escapeText_)])
-    .setFontWeight('bold')
-    .setWrap(true)
-    .setVerticalAlignment('top');
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers.map(escapeText_)]);
+  formatHeaderRow_(sheet, headers.length);
+}
+
+/* หัวคอลัมน์ ตัวหนา ตัดบรรทัด ชิดบน ตรึงแถว 1 และกว้างพอให้เห็นชื่อแถว [ ... ] ของข้อตาราง */
+function formatHeaderRow_(sheet, n) {
+  if (n < 1) return;
+  sheet.getRange(1, 1, 1, n).setFontWeight('bold').setWrap(true).setVerticalAlignment('top');
   sheet.setFrozenRows(1);
-  sheet.setColumnWidths(1, Math.min(BASE_HEADERS.length, headers.length), 150);
-  if (headers.length > BASE_HEADERS.length) {
-    sheet.setColumnWidths(BASE_HEADERS.length + 1, headers.length - BASE_HEADERS.length, 240);
-  }
+  sheet.setColumnWidths(1, Math.min(BASE_HEADERS.length, n), 150);
+  if (n > BASE_HEADERS.length) sheet.setColumnWidths(BASE_HEADERS.length + 1, n - BASE_HEADERS.length, 240);
 }
 
 function writeTable_(sheet, startRow, startCol, rows) {
@@ -339,7 +339,10 @@ function writeTable_(sheet, startRow, startCol, rows) {
 
 function setupSheets() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  FORM_KEYS.forEach(function (k) { ensureResponseSheet_(ss, k); });
+  FORM_KEYS.forEach(function (k) {
+    var sheet = ensureResponseSheet_(ss, k);
+    formatHeaderRow_(sheet, sheet.getLastColumn()); // จัดรูปแบบซ้ำทุกครั้ง แม้หัวคอลัมน์ครบอยู่แล้ว
+  });
 
   var m = ss.getSheetByName(MAP_SHEET) || ss.insertSheet(MAP_SHEET);
   m.clear();

@@ -439,6 +439,17 @@ test('setupSheets บนแท็บที่มีข้อมูลแล้�
   eq(v[1].slice(0, 5), ['t', 's', 'B', 'X', 'A']);
 });
 
+test('setupSheets จัดรูปแบบหัวคอลัมน์ แม้แท็บมีหัวครบอยู่แล้ว (กรณี SH1 เดิม)', () => {
+  const { g, sheets } = makeGas();
+  post(g, [['_form', 'SH1'], ['_started', '']]); // สร้างแท็บ SH1
+  const sh = sheets['คำตอบ SH1'];
+  sh.wrapped = false;
+  sh.widths = {};
+  g.setupSheets();
+  assert.ok(sh.wrapped, 'header row wrapped');
+  assert.strictEqual(sh.widths[3], 240);
+});
+
 test('CORE_ITEMS ใน Code.gs ตรงกับ forms-spec.js', () => {
   const { g } = makeGas();
   eq(JSON.parse(JSON.stringify(g.CORE_ITEMS)), JSON.parse(JSON.stringify(C.CORE_ITEMS)));
